@@ -97,7 +97,7 @@ def load_config(config_file: str) -> dict:
         "ntfy_token": "default_token",
         
         "nextcloud_base_url": "https://nextcloud.example.com",
-        "nextcloud_notification_path": "/ocs/v2.php/apps/notifications/api/v1/notifications",
+        "nextcloud_notification_path": "/ocs/v2.php/apps/notifications/api/v2/notifications",
         
         "nextcloud_username": "user",
         "nextcloud_password": "application_password",
