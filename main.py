@@ -171,7 +171,11 @@ def main():
             last_datetime = datetime.fromisoformat(notification["datetime"])
             log.info("New notifications received.")
 
-            title = f"Nextcloud - {translate_app_name(data["ocs"]["data"][0]["app"])}: {data["ocs"]["data"][0]["subject"]}"
+            title = ""
+            if notification["app"] == "admin_notifications":
+                title = f"Nextcloud: {notification["subject"]}"
+            else:
+                title = f"Nextcloud - {translate_app_name(notification["app"])}: {notification["subject"]}"
             log.debug(f"Notification title: {title}")
 
             message = notification["message"]
