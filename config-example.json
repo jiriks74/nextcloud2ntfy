@@ -1,0 +1,17 @@
+{
+  "ntfy_base_url": "https://ntfy.example.com",
+  "ntfy_topic": "nextcloud",
+  "ntfy_token": "default_token",
+
+  "nextcloud_base_url": "https://nextcloud.example.com",
+  "nextcloud_notification_path": "/ocs/v2.php/apps/notifications/api/v1/notifications",
+
+  "nextcloud_username": "user",
+  "nextcloud_password": "application_password",
+
+  "nextcloud_poll_interval_seconds": 60,
+  "nextcloud_error_sleep_seconds": 600,
+  "nextcloud_204_sleep_seconds": 3600,
+
+  "rate_limit_sleep_seconds": 600
+}
