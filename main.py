@@ -147,7 +147,7 @@ def main():
         "Accept": "application/json"
     }
     while True:
-        log.info("Fetching notifications.")
+        log.debug("Fetching notifications.")
         response = requests.get(f"{config["nextcloud_base_url"]}{config["nextcloud_notification_path"]}", headers = nextcloud_request_headers)
         if not response.ok:
             log.error(f"Error while fetching notifications. Response code: {response.status_code}.")
@@ -166,7 +166,7 @@ def main():
         for notification in reversed(data["ocs"]["data"]):
 
             if datetime.fromisoformat(notification["datetime"]) <= last_datetime:
-                log.info("No new notifications.")
+                log.debug("No new notifications.")
                 continue
             last_datetime = datetime.fromisoformat(notification["datetime"])
             log.info("New notifications received.")
