@@ -25,7 +25,8 @@ def parse_actions(actions: list) -> list:
             "action": "http",
             "label": f"{action['label']}",
             "url": f"{action['link']}",
-            "method": f"{action['type']}"
+            "method": f"{action['type']}",
+            "clear": True
         }
 
         # The `action['type']` is documented to be a HTTP request.
