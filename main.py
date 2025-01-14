@@ -60,7 +60,7 @@ def push_to_ntfy(url: str, token: str, topic: str, title: str, click = "", messa
 # Nextcloud apps have quite often internal names differing from the UI names.
 #  - Eg. `spreed` is `Talk`
 # This is the place to track the differences
-def translate_app_name(app = str):
+def translate_app_name(app = str) -> str:
     if app == "spreed":
         return "Talk"
     elif app == "event_update_notification":
@@ -68,7 +68,7 @@ def translate_app_name(app = str):
     else:
         return app
 
-def arg_parser():
+def arg_parser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description ='Nextcloud to ntfy.sh notification bridge.')
 
     parser.add_argument(
