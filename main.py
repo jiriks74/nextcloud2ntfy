@@ -63,6 +63,8 @@ def push_to_ntfy(url: str, token: str, topic: str, title: str, click = "", messa
 def translate_app_name(app = str):
     if app == "spreed":
         return "Talk"
+    elif app == "event_update_notification":
+        return "Calendar"
     else:
         return app
 
