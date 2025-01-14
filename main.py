@@ -8,6 +8,11 @@ import base64
 from time import sleep
 from datetime import datetime
 
+# Exit codes
+#   - 1: Response from 'ntfy' was < 400 while pushing notification
+#   - 2: No ntfy authentication token was provided
+#   - 3: Provided 'ntfy' authentication token is invalid
+
 log_levels = {
     "DEBUG": log.DEBUG,
     "INFO": log.INFO,
@@ -49,11 +54,15 @@ def push_to_ntfy(url: str, token: str, topic: str, title: str, click = "", messa
         "actions": actions
     }
 
-    response = requests.post(url, 
-        data=json.dumps(jsonData),
-        headers={
-            "Authorization": f"Bearer {token}"
-        })
+    if token != "":
+        response = requests.post(url, 
+            data=json.dumps(jsonData),
+            headers={
+                "Authorization": f"Bearer {token}"
+            })
+    else:
+        response = requests.post(url, 
+            data=json.dumps(jsonData))
 
     return response
 
@@ -92,9 +101,10 @@ def arg_parser() -> argparse.Namespace:
 def load_config(config_file: str) -> dict:
     # Default values for the configuration
     default_config = {
-        "ntfy_base_url": "https://ntfy.example.com",
+        "ntfy_base_url": "https://ntfy.sh",
         "ntfy_topic": "nextcloud",
-        "ntfy_token": "default_token",
+        "ntfy_auth": "false",
+        "ntfy_token": "authentication_token",
         
         "nextcloud_base_url": "https://nextcloud.example.com",
         "nextcloud_notification_path": "/ocs/v2.php/apps/notifications/api/v2/notifications",
@@ -102,8 +112,8 @@ def load_config(config_file: str) -> dict:
         "nextcloud_username": "user",
         "nextcloud_password": "application_password",
         
-        "nextcloud_poll_interval_seconds": 10,
-        "nextcloud_error_sleep_seconds": 300,
+        "nextcloud_poll_interval_seconds": 60,
+        "nextcloud_error_sleep_seconds": 600,
         "nextcloud_204_sleep_seconds": 3600,
         
         "rate_limit_sleep_seconds": 600
@@ -118,6 +128,16 @@ def load_config(config_file: str) -> dict:
         for key, value in default_config.items():
             if key not in config_data:
                 config_data[key] = value
+
+        if config_data["ntfy_auth"] == "false":
+            config_data["ntfy_token"] == ""
+        elif config_data["ntfy_auth"] == "true" and (
+                config_data["ntfy_token"] == "" or config_data["ntfy_token"] == "authentication_token"):
+            print("Error: Option 'ntfy_auth' is set to 'true' but not 'ntfy_token' was set!")
+            exit(2)
+        elif config_data["ntfy_auth"] == "true" and not config_data["ntfy_token"].startswith("tk_"):
+            print("Error: Authentication token set in 'ntfy_token' is invalid!")
+            exit(3)
         
         return config_data
 
