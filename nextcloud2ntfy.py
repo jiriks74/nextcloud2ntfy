@@ -76,6 +76,8 @@ def translate_app_name(app=str) -> str:
         return "Talk"
     elif app == "event_update_notification":
         return "Calendar"
+    elif app == "twofactor_nextcloud_notification":
+        return "2FA"
     else:
         return app
 
