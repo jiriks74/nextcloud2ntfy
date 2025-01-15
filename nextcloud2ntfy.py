@@ -23,7 +23,7 @@ log_levels = {
 
 
 # Converts Nextcloud's notification buttons to ntfy.sh notification actions
-def parse_actions(actions: list) -> list:
+def parse_actions(actions: list, nextcloud_auth_header) -> list:
     parsed_actions = []
 
     for action in actions:
@@ -41,6 +41,11 @@ def parse_actions(actions: list) -> list:
         if action_parsed["method"] == "WEB":
             del action_parsed["method"]
             action_parsed["action"] = "view"
+        else:
+            action_parsed["headers"] = {
+                "Authorization": f"{nextcloud_auth_header}",
+                "OCS-APIREQUEST": "true",
+            }
 
         parsed_actions.append(action_parsed)
 
@@ -229,7 +234,7 @@ def main():
             message = notification["message"]
             log.debug(f"Notification message:\n{message}")
 
-            actions = parse_actions(notification["actions"])
+            actions = parse_actions(notification["actions"], nextcloud_auth_header)
             actions.append(
                 {
                     "action": "http",
