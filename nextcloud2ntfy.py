@@ -183,7 +183,15 @@ def main():
         log.debug(f"Got resonse code: {response.status_code}")
 
         log.debug(f"Received data:\n{response.text}")
-        data = json.loads(response.text)
+        try:
+            data = json.loads(response.text)
+        except Exception as e:
+            log.error("Error parsing response from Nextcloud!")
+            log.error(f"Response code: {response.status_code}")
+            log.error(f"Response body:\n{response.text}")
+            log.error(f"=====================================")
+            log.error(f"Exception:\n{e}")
+            
 
         for notification in reversed(data["ocs"]["data"]):
 
