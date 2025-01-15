@@ -33,13 +33,14 @@ can be guessed from it.
 ### 1. On the machine running the bridge
 
 1. Grab a release
-2. Create a config file: `cp config-example.json config.json`
-3. Fill out the necessary values, they should be self-explanatory:
+2. Install the required Python modules: `pip3 install -r requirements.txt`
+3. Create a config file: `cp config-example.json config.json`
+4. Fill out the necessary values, they should be self-explanatory:
   - `ntfy_topic`
   - `nextcloud_base_url`
   - `nextcloud_username`
   - `nextcloud_password`
-4. Start the bridge: `python3 nextcloud2ntfy.py -c config.json`
+5. Start the bridge: `python3 nextcloud2ntfy.py -c config.json`
 
 > [!CAUTION]
 > On `ntfy.sh` (and instances with `auth-default-access` set to `read-write`)
