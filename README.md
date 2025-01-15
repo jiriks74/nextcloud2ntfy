@@ -1,4 +1,4 @@
-# nextcloud-ntfy.sh
+# nextcloud2ntfy
 
 Are you tired of Nextcloud
 [**still not supporting notifications F-Droid**](https://github.com/nextcloud/talk-android/issues/257)?
@@ -39,7 +39,7 @@ can be guessed from it.
   - `nextcloud_base_url`
   - `nextcloud_username`
   - `nextcloud_password`
-4. Start the bridge: `python3 main.py -c config.json`
+4. Start the bridge: `python3 nextcloud2ntfy.py -c config.json`
 
 > [!CAUTION]
 > On `ntfy.sh` (and instances with `auth-default-access` set to `read-write`)
