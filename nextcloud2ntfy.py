@@ -189,7 +189,7 @@ def main():
             log.error("Error parsing response from Nextcloud!")
             log.error(f"Response code: {response.status_code}")
             log.error(f"Response body:\n{response.text}")
-            log.error(f"=====================================")
+            log.error("=====================================")
             log.error(f"Exception:\n{e}")
             
 
@@ -225,7 +225,7 @@ def main():
             })
             log.debug(f"Notification actions:\n{actions}")
             
-            log.info(f"Pushing notification to ntfy.")
+            log.info("Pushing notification to ntfy.")
 
             response = push_to_ntfy(config["ntfy_base_url"], config["ntfy_token"], config["ntfy_topic"], title, notification["link"], message, actions)
             if response.status_code == 429:
