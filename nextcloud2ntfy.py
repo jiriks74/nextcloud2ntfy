@@ -186,10 +186,13 @@ def main():
     }
     while True:
         log.debug("Fetching notifications.")
-        response = requests.get(
-            f"{config["nextcloud_base_url"]}{config["nextcloud_notification_path"]}",
-            headers=nextcloud_request_headers,
-        )
+        try:
+            response = requests.get(
+                f"{config["nextcloud_base_url"]}{config["nextcloud_notification_path"]}",
+                headers=nextcloud_request_headers,
+            )
+        except requests.exceptions.SSLError as e:
+            log.error(f"SSL error fetching notifications. Maybe the server/proxy is down?\n{e}")
         if not response.ok:
             log.error(
                 f"Error while fetching notifications. Response code: {response.status_code}."
