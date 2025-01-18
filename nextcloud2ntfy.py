@@ -76,7 +76,7 @@ def push_to_ntfy(
 # Nextcloud apps have quite often internal names differing from the UI names.
 #  - Eg. `spreed` is `Talk`
 # This is the place to track the differences
-def translate_app_name(app=str) -> str:
+def translate_app_name(app: str) -> str:
     if app == "spreed":
         return "Talk"
     elif app == "event_update_notification":
