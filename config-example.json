@@ -1,13 +1,17 @@
 {
   "ntfy_base_url": "https://ntfy.sh",
   "ntfy_topic": "nextcloud",
-  "ntfy_auth": "false",
+  "ntfy_auth": false,
   "ntfy_token": "authentication_token",
   
   "nextcloud_base_url": "https://nextcloud.example.com",
   
   "nextcloud_username": "user",
   "nextcloud_password": "application_password",
+
+  "heartbeat": false,
+  "heartbeat_url": "url",
+  "heartbeat_interval": 30,
   
   "nextcloud_poll_interval_seconds": 60,
   "nextcloud_error_sleep_seconds": 600,

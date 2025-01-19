@@ -1,6 +1,7 @@
 import logging as log
 import argparse
 
+import threading
 import requests
 import json
 import base64
@@ -12,6 +13,7 @@ from datetime import datetime
 #   - 1: Response from 'ntfy' was < 400 while pushing notification
 #   - 2: No ntfy authentication token was provided
 #   - 3: Provided 'ntfy' authentication token is invalid
+#   - 4: No heartbeat url was given
 
 log_levels = {
     "DEBUG": log.DEBUG,
@@ -116,12 +118,15 @@ def load_config(config_file: str) -> dict:
     default_config = {
         "ntfy_base_url": "https://ntfy.sh",
         "ntfy_topic": "nextcloud",
-        "ntfy_auth": "false",
+        "ntfy_auth": False,
         "ntfy_token": "authentication_token",
         "nextcloud_base_url": "https://nextcloud.example.com",
         "nextcloud_notification_path": "/ocs/v2.php/apps/notifications/api/v2/notifications",
         "nextcloud_username": "user",
         "nextcloud_password": "application_password",
+        "heartbeat": False,
+        "heartbeat_url": "url",
+        "heartbeat_interval": 30,
         "nextcloud_poll_interval_seconds": 60,
         "nextcloud_error_sleep_seconds": 600,
         "nextcloud_204_sleep_seconds": 3600,
@@ -138,21 +143,24 @@ def load_config(config_file: str) -> dict:
             if key not in config_data:
                 config_data[key] = value
 
-        if config_data["ntfy_auth"] == "false":
+        if config_data["ntfy_auth"] == False:
             config_data["ntfy_token"] == ""
-        elif config_data["ntfy_auth"] == "true" and (
+        elif config_data["ntfy_auth"] == True and (
             config_data["ntfy_token"] == ""
-            or config_data["ntfy_token"] == "authentication_token"
-        ):
+            or config_data["ntfy_token"] == "authentication_token"):
             print(
                 "Error: Option 'ntfy_auth' is set to 'true' but not 'ntfy_token' was set!"
             )
             exit(2)
-        elif config_data["ntfy_auth"] == "true" and not config_data[
-            "ntfy_token"
-        ].startswith("tk_"):
+        elif config_data["ntfy_auth"] == True and not config_data[
+             "ntfy_token" ].startswith("tk_"):
             print("Error: Authentication token set in 'ntfy_token' is invalid!")
             exit(3)
+
+        if config_data["heartbeat"] == True:
+            if config_data["heartbeat_url"] == "url" or config_data["heartbeat_url"] == "":
+                print("Error: 'heartbeat' is set to 'true' but no url was given.")
+                exit(4)
 
         return config_data
 
@@ -165,6 +173,13 @@ def load_config(config_file: str) -> dict:
         return default_config
 
 
+def monitoring_heartbeat(url, interval):
+    while True:
+        response = requests.get(url)
+        log.info("Sent heartbeat.")
+        log.debug(f"Response: {response}")
+        sleep(interval)
+
 def main():
     args = arg_parser()
     config = load_config(args.config_file)
@@ -176,6 +191,13 @@ def main():
         level=log_levels[args.log_level],
     )
     log.info("Started Nextcloud to ntfy.sh notification bridge.")
+
+    if config["heartbeat"] == True:
+        heartbeat = threading.Thread(target=monitoring_heartbeat,
+            daemon=True,
+            args=("https://uptime.stfka.eu/api/push/pRCW5ARYxn?status=up&msg=OK&ping=",
+            config["heartbeat_interval"]))
+        heartbeat.start()
 
     last_datetime = datetime.fromisoformat("1970-01-01T00:00:00Z")
     nextcloud_auth_header = f"Basic {base64.b64encode(f"{config["nextcloud_username"]}:{config["nextcloud_password"]}".encode("utf-8")).decode("utf-8")}"
@@ -280,7 +302,6 @@ def main():
                 exit(1)
 
         sleep(config["nextcloud_poll_interval_seconds"])
-
 
 if __name__ == "__main__":
     main()
