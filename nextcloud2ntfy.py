@@ -200,7 +200,7 @@ def main():
         heartbeat.start()
 
     last_datetime = datetime.fromisoformat("1970-01-01T00:00:00Z")
-    nextcloud_auth_header = f"Basic {base64.b64encode(f"{config["nextcloud_username"]}:{config["nextcloud_password"]}".encode("utf-8")).decode("utf-8")}"
+    nextcloud_auth_header = f"Basic {base64.b64encode('{}:{}'.format(config['nextcloud_username'], config['nextcloud_password']).encode('utf-8')).decode('utf-8')}"
     nextcloud_request_headers = {
         "Authorization": f"{nextcloud_auth_header}",
         "OCS-APIREQUEST": "true",
@@ -210,7 +210,7 @@ def main():
         log.debug("Fetching notifications.")
         try:
             response = requests.get(
-                f"{config["nextcloud_base_url"]}{config["nextcloud_notification_path"]}",
+                f"{config['nextcloud_base_url']}{config['nextcloud_notification_path']}",
                 headers=nextcloud_request_headers,
             )
         except requests.exceptions.SSLError as e:
@@ -220,14 +220,14 @@ def main():
                 f"Error while fetching notifications. Response code: {response.status_code}."
             )
             log.warning(
-                f"Sleeping for {config["nextcloud_error_sleep_seconds"]} seconds."
+                f"Sleeping for {config['nextcloud_error_sleep_seconds']} seconds."
             )
             sleep(config["nextcloud_error_sleep_seconds"])
             continue
 
         elif response.status_code == 204:
             log.debug(
-                f"Got code 204 while fetching notifications. Sleeping for {config["nextcloud_204_sleep_seconds"]/60/60} hour(s)."
+                f"Got code 204 while fetching notifications. Sleeping for {config['nextcloud_204_sleep_seconds']/60/60} hour(s)."
             )
 
         log.debug(f"Got resonse code: {response.status_code}")
@@ -251,9 +251,9 @@ def main():
 
             title = ""
             if notification["app"] == "admin_notifications":
-                title = f"Nextcloud: {notification["subject"]}"
+                title = f"Nextcloud: {notification['subject']}"
             else:
-                title = f"Nextcloud - {translate_app_name(notification["app"])}: {notification["subject"]}"
+                title = f"Nextcloud - {translate_app_name(notification['app'])}: {notification['subject']}"
             log.debug(f"Notification title: {title}")
 
             message = notification["message"]
@@ -264,7 +264,7 @@ def main():
                 {
                     "action": "http",
                     "label": "Dismiss",
-                    "url": f"{config["nextcloud_base_url"]}{config["nextcloud_notification_path"]}/{notification["notification_id"]}",
+                    "url": f"{config['nextcloud_base_url']}{config['nextcloud_notification_path']}/{notification['notification_id']}",
                     "method": "DELETE",
                     "headers": {
                         "Authorization": f"{nextcloud_auth_header}",
@@ -288,14 +288,14 @@ def main():
             )
             if response.status_code == 429:
                 log.error(
-                    f"Error pushing notification to {config["ntfy_base_url"]}: Too Many Requests."
+                    f"Error pushing notification to {config['ntfy_base_url']}: Too Many Requests."
                 )
                 log.warning(
-                    f"Sleeping for {config["rate_limit_sleep_seconds"]} seconds."
+                    f"Sleeping for {config['rate_limit_sleep_seconds']} seconds."
                 )
             elif not response.ok:
                 log.critical(
-                    f"Unknown erroro while pushing notification to {config["ntfy_base_url"]}. Error code: {response.status_code}."
+                    f"Unknown erroro while pushing notification to {config['ntfy_base_url']}. Error code: {response.status_code}."
                 )
                 log.critical(f"Response: {response.text}")
                 log.error("Stopping.")
