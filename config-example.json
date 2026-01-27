@@ -17,5 +17,11 @@
   "nextcloud_error_sleep_seconds": 600,
   "nextcloud_204_sleep_seconds": 3600,
   
-  "rate_limit_sleep_seconds": 600
+  "rate_limit_sleep_seconds": 600,
+
+  "sentry": {
+      "enabled": false,
+      "dsn": "your_dsn_here",
+      "environment": "production"
+  }
 }

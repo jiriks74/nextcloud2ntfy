@@ -23,6 +23,31 @@ log_levels = {
     "CRITICAL": log.CRITICAL,
 }
 
+import sentry_sdk
+
+def sentry_before_send(event, hint):
+    """Filters Sentry events before sending.
+
+    This function filters out logged errors.
+    By doing this we will only receive exceptions in Sentry.
+
+    Args:
+        event (dict): The event dictionary containing exception data.
+
+        hint (dict): Additional information about the event, including
+            the original exception.
+
+    Returns:
+        dict: The modified event dictionary, or None if the event should be
+            ignored.
+    """
+
+    # Ignore logged errors
+    if "logger" in event:
+        return None
+
+    return event
+
 
 # Converts Nextcloud's notification buttons to ntfy.sh notification actions
 def parse_actions(actions: list, nextcloud_auth_header) -> list:
@@ -131,6 +156,11 @@ def load_config(config_file: str) -> dict:
         "nextcloud_error_sleep_seconds": 600,
         "nextcloud_204_sleep_seconds": 3600,
         "rate_limit_sleep_seconds": 600,
+        "sentry": {
+            "enabled": False,
+            "dsn": "your_dsn_here",
+            "environment": "production"
+        },
     }
 
     try:
@@ -190,6 +220,15 @@ def main():
         datefmt="%d-%m-%Y %H:%M:%S",
         level=log_levels[args.log_level],
     )
+
+    if config["sentry"]["enabled"] == True:
+        sentry_sdk.init(
+            dsn=config["sentry"]["dsn"],
+            environment=config["sentry"]["environment"],
+            before_send=sentry_before_send,
+        )
+        log.info("Sentry SDK initialized.")
+
     log.info("Started Nextcloud to ntfy.sh notification bridge.")
 
     if config["heartbeat"] == True:
